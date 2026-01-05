@@ -9,7 +9,7 @@ const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
-  const [filter, setFilter] = useState('')
+  const [searchTerm, setSearchTerm] = useState('')
   const [notification, setNotification] = useState(null)
 
   useEffect(() => {
@@ -18,48 +18,87 @@ const App = () => {
       .then(initialPersons => {
         setPersons(initialPersons)
       })
+      .catch(error => {
+        showNotification('Failed to fetch persons from server', 'error')
+      })
   }, [])
+
+  const showNotification = (message, type) => {
+    setNotification({ message, type })
+    setTimeout(() => {
+      setNotification(null)
+    }, 5000)
+  }
 
   const addPerson = (event) => {
     event.preventDefault()
     
-    const existingPerson = persons.find(person => person.name === newName)
-    
+    if (newName.trim() === '') {
+      showNotification('Name cannot be empty', 'error')
+      return
+    }
+
+    if (newNumber.trim() === '') {
+      showNotification('Number cannot be empty', 'error')
+      return
+    }
+
+    const existingPerson = persons.find(
+      person => person.name.toLowerCase() === newName.toLowerCase()
+    )
+
     if (existingPerson) {
-      if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
-        const changedPerson = { ...existingPerson, number: newNumber }
+      if (window.confirm(
+        `${newName} is already added to phonebook, replace the old number with a new one?`
+      )) {
+        const updatedPerson = { ...existingPerson, number: newNumber }
         
         personService
-          .update(existingPerson.id, changedPerson)
+          .update(existingPerson.id, updatedPerson)
           .then(returnedPerson => {
-            setPersons(persons.map(person => person.id !== existingPerson.id ? person : returnedPerson))
+            setPersons(persons.map(person => 
+              person.id !== existingPerson.id ? person : returnedPerson
+            ))
             setNewName('')
             setNewNumber('')
             showNotification(`Updated ${returnedPerson.name}'s number`, 'success')
           })
           .catch(error => {
-            showNotification(
-              `Information of ${existingPerson.name} has already been removed from server`,
-              'error'
-            )
-            setPersons(persons.filter(p => p.id !== existingPerson.id))
+            if (error.response && error.response.status === 404) {
+              showNotification(
+                `Information of ${existingPerson.name} has already been removed from server`,
+                'error'
+              )
+              setPersons(persons.filter(p => p.id !== existingPerson.id))
+            } else {
+              showNotification(
+                `Failed to update ${existingPerson.name}'s number`,
+                'error'
+              )
+            }
+            setNewName('')
+            setNewNumber('')
           })
       }
-    } else {
-      const personObject = {
-        name: newName,
-        number: newNumber
-      }
-
-      personService
-        .create(personObject)
-        .then(returnedPerson => {
-          setPersons(persons.concat(returnedPerson))
-          setNewName('')
-          setNewNumber('')
-          showNotification(`Added ${returnedPerson.name}`, 'success')
-        })
+      return
     }
+
+    const personObject = {
+      name: newName,
+      number: newNumber
+    }
+
+    personService
+      .create(personObject)
+      .then(returnedPerson => {
+        setPersons(persons.concat(returnedPerson))
+        setNewName('')
+        setNewNumber('')
+        showNotification(`Added ${returnedPerson.name}`, 'success')
+      })
+      .catch(error => {
+        showNotification('Failed to add person', 'error')
+      })
   }
 
   const deletePerson = (id) => {
@@ -73,20 +112,17 @@ const App = () => {
           showNotification(`Deleted ${person.name}`, 'success')
         })
         .catch(error => {
-          showNotification(
-            `Information of ${person.name} has already been removed from server`,
-            'error'
-          )
+          if (error.response && error.response.status === 404) {
+            showNotification(
+              `Information of ${person.name} has already been removed from server`,
+              'error'
+            )
+          } else {
+            showNotification(`Failed to delete ${person.name}`, 'error')
+          }
           setPersons(persons.filter(p => p.id !== id))
         })
     }
-  }
-
-  const showNotification = (message, type) => {
-    setNotification({ message, type })
-    setTimeout(() => {
-      setNotification(null)
-    }, 5000)
   }
 
   const handleNameChange = (event) => {
@@ -97,26 +133,24 @@ const App = () => {
     setNewNumber(event.target.value)
   }
 
-  const handleFilterChange = (event) => {
-    setFilter(event.target.value)
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value)
   }
 
-  const personsToShow = filter
-    ? persons.filter(person => 
-        person.name.toLowerCase().includes(filter.toLowerCase())
+  const personsToShow = searchTerm === ''
+    ? persons
+    : persons.filter(person =>
+        person.name.toLowerCase().includes(searchTerm.toLowerCase())
       )
-    : persons
 
   return (
     <div>
       <h2>Phonebook</h2>
-      
       <Notification notification={notification} />
-
-      <Filter filter={filter} handleFilterChange={handleFilterChange} />
-
+      
+      <Filter searchTerm={searchTerm} handleSearchChange={handleSearchChange} />
+      
       <h3>Add a new</h3>
-
       <PersonForm
         addPerson={addPerson}
         newName={newName}
@@ -124,9 +158,8 @@ const App = () => {
         newNumber={newNumber}
         handleNumberChange={handleNumberChange}
       />
-
+      
       <h3>Numbers</h3>
-
       <Persons persons={personsToShow} deletePerson={deletePerson} />
     </div>
   )
