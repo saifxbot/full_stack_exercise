@@ -7,6 +7,7 @@ const app = express()
 // Middleware
 app.use(cors())
 app.use(express.json())
+app.use(express.static('dist'))
 
 // Custom morgan token for POST body (Exercise 3.8)
 morgan.token('body', (req) => {

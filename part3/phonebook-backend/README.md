@@ -14,6 +14,11 @@ Backend server for the phonebook application built with Node.js and Express.
 - ✅ 3.7: Morgan middleware for logging (tiny configuration)
 - ✅ 3.8: Morgan logs POST request body
 
+### 3.9-3.11: Connecting frontend and deployment
+- ✅ 3.9: Frontend connected to backend (uses /api/persons)
+- ✅ 3.10: Backend ready for deployment to internet
+- ✅ 3.11: Full-stack deployment (serves frontend static files)
+
 ## Installation
 
 ```bash
@@ -33,6 +38,33 @@ npm start
 ```
 
 The server will run on `http://localhost:3001`
+
+## Building Full-Stack Application
+
+### Build frontend and copy to backend:
+```bash
+npm run build:ui
+```
+
+This will:
+1. Remove old `dist/` folder
+2. Build the frontend (from `part2/phonebook`)
+3. Copy the `dist/` folder to backend
+4. Backend will serve frontend from `/` and API from `/api/persons`
+
+## Deployment
+
+### Deploy to Fly.io:
+```bash
+npm run deploy:full
+```
+
+This will build the UI and deploy to Fly.io.
+
+### View production logs:
+```bash
+npm run logs:prod
+```
 
 ## API Endpoints
 
@@ -122,7 +154,8 @@ curl -X DELETE http://localhost:3001/api/persons/2
 ```
 
 ### Using Browser
-- All persons: http://localhost:3001/api/persons
+- Frontend: http://localhost:3001
+- All persons API: http://localhost:3001/api/persons
 - Info page: http://localhost:3001/info
 - Single person: http://localhost:3001/api/persons/1
 
@@ -141,6 +174,7 @@ phonebook-backend/
 ├── index.js              # Main server file
 ├── package.json          # Dependencies and scripts
 ├── .gitignore           # Git ignore rules
+├── dist/                # Frontend build (after npm run build:ui)
 ├── requests/
 │   └── test.rest        # REST client test file
 └── README.md            # This file
@@ -152,10 +186,46 @@ phonebook-backend/
 - POST requests show the request body in logs (Exercise 3.8)
 - IDs are generated randomly with Math.random()
 - Data is stored in memory (resets on server restart)
+- Backend serves frontend static files from `dist/` folder
+- API endpoints are under `/api/persons`
+- Frontend makes relative API calls (e.g., `/api/persons`)
+
+## Deployment Instructions
+
+### Option 1: Fly.io (Recommended)
+
+1. Install Fly.io CLI: https://fly.io/docs/hands-on/install-flyctl/
+
+2. Login to Fly.io:
+```bash
+fly auth login
+```
+
+3. Initialize Fly.io app (one time):
+```bash
+fly launch
+```
+
+4. Deploy:
+```bash
+npm run deploy:full
+```
+
+### Option 2: Render
+
+1. Create account at https://render.com
+
+2. Connect your GitHub repository
+
+3. Create new "Web Service"
+
+4. Settings:
+   - Build Command: `npm install && npm run build:ui`
+   - Start Command: `npm start`
+   - Environment: `Node`
 
 ## Next Steps
 
-- Exercises 3.9-3.11: Connect frontend and deploy
 - Exercises 3.12-3.18: Add MongoDB database
 - Exercises 3.19-3.22: Validation and ESLint
 
