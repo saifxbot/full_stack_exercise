@@ -1,15 +1,15 @@
 {
   "name": "phonebook-backend",
   "version": "1.0.0",
-  "description": "Phonebook backend for Full Stack Open Part 3",
+  "description": "Backend for phonebook application - Full Stack Open Part 3",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["phonebook", "backend", "express"],
-  "author": "",
+  "keywords": ["phonebook", "express", "backend"],
+  "author": "saifxbot",
   "license": "MIT",
   "dependencies": {
     "cors": "^2.8.5",

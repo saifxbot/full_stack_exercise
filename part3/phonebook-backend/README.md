@@ -1,19 +1,18 @@
-# Phonebook Backend
+# Phonebook Backend - Part 3
 
-Backend server for the Full Stack Open Part 3 phonebook application.
+Backend server for the phonebook application built with Node.js and Express.
 
-## Exercises 3.1-3.8
+## Exercises Completed
 
-This implementation includes:
-
-- ✅ **3.1**: GET /api/persons - Returns all phonebook entries
-- ✅ **3.2**: GET /info - Shows phonebook info and timestamp
-- ✅ **3.3**: GET /api/persons/:id - Returns single person
-- ✅ **3.4**: DELETE /api/persons/:id - Deletes a person
-- ✅ **3.5**: POST /api/persons - Adds new person with random ID
-- ✅ **3.6**: Validation for name/number and unique names
-- ✅ **3.7**: Morgan logging middleware (tiny configuration)
-- ✅ **3.8**: Morgan custom token to log POST request body
+### 3.1-3.8: Backend basics
+- ✅ 3.1: Return hardcoded phonebook entries from GET /api/persons
+- ✅ 3.2: Info page at /info showing count and timestamp
+- ✅ 3.3: Get single person by ID (GET /api/persons/:id)
+- ✅ 3.4: Delete person (DELETE /api/persons/:id)
+- ✅ 3.5: Add new person with POST request
+- ✅ 3.6: Validation (required fields, unique names)
+- ✅ 3.7: Morgan middleware for logging (tiny configuration)
+- ✅ 3.8: Morgan logs POST request body
 
 ## Installation
 
@@ -35,23 +34,80 @@ npm start
 
 The server will run on `http://localhost:3001`
 
-## Testing the API
+## API Endpoints
+
+### GET /api/persons
+Returns all phonebook entries as JSON.
+
+**Example response:**
+```json
+[
+  {
+    "id": "1",
+    "name": "Arto Hellas",
+    "number": "040-123456"
+  }
+]
+```
+
+### GET /info
+Shows the number of entries and current timestamp.
+
+### GET /api/persons/:id
+Returns a single person by ID.
+
+**Success (200):**
+```json
+{
+  "id": "1",
+  "name": "Arto Hellas",
+  "number": "040-123456"
+}
+```
+
+**Not found (404):**
+```json
+{
+  "error": "person not found"
+}
+```
+
+### POST /api/persons
+Adds a new person to the phonebook.
+
+**Request body:**
+```json
+{
+  "name": "New Person",
+  "number": "123-456-7890"
+}
+```
+
+**Validation errors (400):**
+- Missing name: `{ "error": "name is required" }`
+- Missing number: `{ "error": "number is required" }`
+- Duplicate name: `{ "error": "name must be unique" }`
+
+### DELETE /api/persons/:id
+Deletes a person from the phonebook.
+
+**Success:** 204 No Content  
+**Not found:** 404 with error message
+
+## Testing
 
 ### Using VS Code REST Client
-
-Open the `requests/test.rest` file and click "Send Request" above each request.
-
-### Using Browser
-
-- Get all persons: http://localhost:3001/api/persons
-- Get info: http://localhost:3001/info
-- Get single person: http://localhost:3001/api/persons/1
+1. Install the "REST Client" extension
+2. Open `requests/test.rest`
+3. Click "Send Request" above any HTTP request
 
 ### Using curl
-
 ```bash
 # Get all persons
 curl http://localhost:3001/api/persons
+
+# Get info
+curl http://localhost:3001/info
 
 # Get single person
 curl http://localhost:3001/api/persons/1
@@ -59,41 +115,50 @@ curl http://localhost:3001/api/persons/1
 # Add new person
 curl -X POST http://localhost:3001/api/persons \
   -H "Content-Type: application/json" \
-  -d '{"name":"New Person","number":"123-456-7890"}'
+  -d '{"name":"Test User","number":"555-1234"}'
 
 # Delete person
-curl -X DELETE http://localhost:3001/api/persons/1
+curl -X DELETE http://localhost:3001/api/persons/2
 ```
 
-## API Endpoints
+### Using Browser
+- All persons: http://localhost:3001/api/persons
+- Info page: http://localhost:3001/info
+- Single person: http://localhost:3001/api/persons/1
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | /api/persons | Get all persons |
-| GET | /info | Get phonebook info |
-| GET | /api/persons/:id | Get single person |
-| POST | /api/persons | Add new person |
-| DELETE | /api/persons/:id | Delete person |
+## Technologies Used
 
-## Validation Rules
+- **Node.js** - JavaScript runtime
+- **Express** - Web framework
+- **Morgan** - HTTP request logger
+- **CORS** - Cross-Origin Resource Sharing
+- **Nodemon** - Auto-restart during development
 
-- Name is required
-- Number is required
-- Name must be unique
+## Project Structure
 
-## Dependencies
+```
+phonebook-backend/
+├── index.js              # Main server file
+├── package.json          # Dependencies and scripts
+├── .gitignore           # Git ignore rules
+├── requests/
+│   └── test.rest        # REST client test file
+└── README.md            # This file
+```
 
-- **express**: Web framework
-- **cors**: Enable Cross-Origin Resource Sharing
-- **morgan**: HTTP request logger
+## Development Notes
 
-## Dev Dependencies
+- Morgan logs all requests to console
+- POST requests show the request body in logs (Exercise 3.8)
+- IDs are generated randomly with Math.random()
+- Data is stored in memory (resets on server restart)
 
-- **nodemon**: Auto-restart server on file changes
+## Next Steps
 
-## Technologies
+- Exercises 3.9-3.11: Connect frontend and deploy
+- Exercises 3.12-3.18: Add MongoDB database
+- Exercises 3.19-3.22: Validation and ESLint
 
-- Node.js
-- Express.js
-- Morgan (logging)
-- CORS
+## License
+
+MIT
