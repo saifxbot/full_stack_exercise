@@ -1,0 +1,45 @@
+### Get all persons (Exercise 3.1)
+GET http://localhost:3001/api/persons
+
+### Get info page (Exercise 3.2)
+GET http://localhost:3001/info
+
+### Get single person (Exercise 3.3)
+GET http://localhost:3001/api/persons/1
+
+### Delete person (Exercise 3.4)
+DELETE http://localhost:3001/api/persons/2
+
+### Add new person (Exercise 3.5 & 3.6)
+POST http://localhost:3001/api/persons
+Content-Type: application/json
+
+{
+  "name": "Test Person",
+  "number": "123-456-7890"
+}
+
+### Test validation - missing name
+POST http://localhost:3001/api/persons
+Content-Type: application/json
+
+{
+  "number": "123-456-7890"
+}
+
+### Test validation - missing number
+POST http://localhost:3001/api/persons
+Content-Type: application/json
+
+{
+  "name": "Test Person"
+}
+
+### Test validation - duplicate name
+POST http://localhost:3001/api/persons
+Content-Type: application/json
+
+{
+  "name": "Arto Hellas",
+  "number": "123-456-7890"
+}
