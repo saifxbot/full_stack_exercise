@@ -53,7 +53,7 @@ app.get('/api/persons/:id', (request, response, next) => {
 // Exercise 3.15: Delete person from database
 app.delete('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndDelete(request.params.id)
-    .then(result => {
+    .then(() => {
       response.status(204).end()
     })
     .catch(error => next(error))
@@ -62,12 +62,12 @@ app.delete('/api/persons/:id', (request, response, next) => {
 // Exercise 3.14: Add new person to database with validation
 app.post('/api/persons', (request, response, next) => {
   const body = request.body
-  
+
   const person = new Person({
     name: body.name,
     number: body.number,
   })
-  
+
   person.save()
     .then(savedPerson => {
       response.json(savedPerson)
@@ -80,7 +80,7 @@ app.put('/api/persons/:id', (request, response, next) => {
   const { name, number } = request.body
 
   Person.findByIdAndUpdate(
-    request.params.id, 
+    request.params.id,
     { name, number },
     { new: true, runValidators: true, context: 'query' }
   )

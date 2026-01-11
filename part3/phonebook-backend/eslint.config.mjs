@@ -1,4 +1,3 @@
-@"
 import js from '@eslint/js'
 import globals from 'globals'
 
@@ -16,7 +15,7 @@ export default [
     rules: {
       'eqeqeq': 'error',
       'no-trailing-spaces': 'error',
-      'object-curly-spacing': ['error', 'always'],
+      'object-curly-spacing':  ['error', 'always'],
       'arrow-spacing': ['error', { 'before': true, 'after': true }],
       'no-console': 0,
     },
@@ -25,4 +24,3 @@ export default [
     ignores: ['dist/**', 'node_modules/**'],
   },
 ]
-"@ | Out-File -FilePath eslint.config.mjs -Encoding utf8
