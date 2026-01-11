@@ -1,8 +1,28 @@
-import js from "@eslint/js";
-import globals from "globals";
-import { defineConfig } from "eslint/config";
+@"
+import js from '@eslint/js'
+import globals from 'globals'
 
-export default defineConfig([
-  { files: ["**/*.{js,mjs,cjs}"], plugins: { js }, extends: ["js/recommended"], languageOptions: { globals: globals.browser } },
-  { files: ["**/*.js"], languageOptions: { sourceType: "commonjs" } },
-]);
+export default [
+  js.configs.recommended,
+  {
+    files: ['**/*.js'],
+    languageOptions: {
+      sourceType: 'commonjs',
+      globals: {
+        ...globals.node,
+      },
+      ecmaVersion: 'latest',
+    },
+    rules: {
+      'eqeqeq': 'error',
+      'no-trailing-spaces': 'error',
+      'object-curly-spacing': ['error', 'always'],
+      'arrow-spacing': ['error', { 'before': true, 'after': true }],
+      'no-console': 0,
+    },
+  },
+  {
+    ignores: ['dist/**', 'node_modules/**'],
+  },
+]
+"@ | Out-File -FilePath eslint.config.mjs -Encoding utf8
